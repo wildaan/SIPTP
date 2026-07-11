@@ -1,58 +1,115 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# SIPTP - Sistem Informasi Pengajuan Transaksi Pengeluaran
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+SIPTP adalah aplikasi berbasis web yang digunakan untuk mengelola pengajuan transaksi pengeluaran dengan sistem persetujuan (approval) berjenjang dan pengecekan budget secara otomatis.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## Cara Instalasi
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+1. **Clone Repository & Install Dependencies**
+   ```bash
+   git clone <url-repository>
+   cd lavanaya
+   composer install
+   ```
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+2. **Konfigurasi Environment**
+   Copy file `.env.example` menjadi `.env`, lalu generate application key:
+   ```bash
+   copy .env.example .env
+   php artisan key:generate
+   ```
 
-## Learning Laravel
+3. **Setup Database**
+   Buat database kosong di MySQL (misal bernama `lavanaya`), lalu sesuaikan konfigurasi di file `.env`:
+   ```env
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=lavanaya
+   DB_USERNAME=root
+   DB_PASSWORD=
+   ```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+4. **Konfigurasi Email Notifikasi**
+   Secara default, email menggunakan driver `log` untuk mempermudah testing (email tidak benar-benar dikirim, tapi isinya bisa dilihat di `storage/logs/laravel.log`).
+   ```env
+   MAIL_MAILER=log
+   ```
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+5. **Migrate & Seed Database**
+   Jalankan perintah berikut untuk membuat semua tabel dan mengisi data dummy:
+   ```bash
+   php artisan migrate:fresh --seed
+   ```
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+6. **Storage Link**
+   Buat symlink agar file upload (seperti dokumen pengajuan dan bukti transfer) bisa diakses secara publik:
+   ```bash
+   php artisan storage:link
+   ```
 
-## Agentic Development
+7. **Jalankan Aplikasi**
+   Jalankan server aplikasi:
+   ```bash
+   php artisan serve
+   ```
+   Buka `http://localhost:8000` di browser.
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+   ```bash
+   php artisan queue:work
+   ```
 
-```bash
-composer require laravel/boost --dev
+---
+## Akun Default untuk Testing
+Setelah menjalankan seeder, gunakan akun berikut untuk mencoba login sebagai berbagai role:
 
-php artisan boost:install
-```
+| Role | Email | Password | Keterangan |
+|---|---|---|---|
+| Staff | staff@test.com | password | Memiliki hak akses Admin (Kelola User) |
+| SPV | spv@test.com | password | - |
+| Manager | manager@test.com | password | - |
+| Direktur | direktur@test.com | password | - |
+| Finance | finance@test.com | password | - |
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+*(Role "Admin" tidak dibuat sebagai entitas role terpisah di tabel roles, melainkan di-handle via flag `users_is_admin = 1` di tabel users untuk menghindari bentrok dengan logika approval berjenjang.)*
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Dokumentasi API (Postman)
 
-## Code of Conduct
+Dokumentasi API tersedia dalam bentuk **Postman Collection** di dalam folder `docs/`:
+- `docs/SIPTP.postman_collection.json` (Semua endpoint)
+- `docs/SIPTP.postman_environment.json` (Environment variables)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Silahkan import kedua file tersebut ke Postman. **Pastikan melakukan request Login terlebih dahulu** (di folder Auth) dengan Postman Interceptor/Cookie Jar aktif agar cookie session tersimpan untuk request berikutnya.
 
-## Security Vulnerabilities
+*(Catatan: Modul Dashboard tidak memiliki API endpoint JSON terpisah karena langsung di-render melalui Blade view.)*
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Penjelasan Asumsi & Workflow Approval
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Sistem menggunakan pendekatan **Threshold-Based Routing** (berdasarkan nilai nominal dan kategori pengajuan) seperti yang dijabarkan pada flowchart proses bisnis:
+
+1. **Kategori PO Produk**
+   - Nilai berapa pun: **Staff -> SPV -> Manager -> Direktur -> Finance**.
+   - *Asumsi*: Sesuai flowchart, untuk kategori "PO Produk", tidak ada *budget checking* di awal (saat create pengajuan).
+
+2. **Nominal <= Rp 5.000.000 (Selain PO Produk)**
+   - Routing: **Staff -> SPV -> Finance**.
+   - Pengecekan Budget: Dilakukan di awal (saat Staff submit). Jika budget tersedia, status menjadi *Waiting SPV Approval* (3).
+
+3. **Nominal > Rp 5.000.000 s/d Rp 10.000.000 (Selain PO Produk)**
+   - Routing: **Staff -> Manager -> Finance**.
+   - Pengecekan Budget: Dilakukan di awal. Jika budget tersedia, status menjadi *Waiting Manager Approval* (4). (Tidak melewati SPV).
+
+4. **Nominal > Rp 10.000.000 (Selain PO Produk)**
+   - Routing: **Staff -> Direktur -> Finance**.
+   - *Asumsi*: Sama seperti PO Produk, tidak ada *budget checking* di awal (saat submit).
+
+---
+**Budget Check Final**
+
+Meskipun pengajuan > 10jt atau PO Produk tidak dicek budget-nya di awal, **selalu ada pengecekan saldo final di tahap Finance** (saat Finance melakukan action "Pay"). Jika saat eksekusi pembayaran saldo budget kategori sudah tidak mencukupi, Finance akan menolak pengajuan tersebut secara sistem (status menjadi Rejected).
+
