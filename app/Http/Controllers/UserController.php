@@ -76,12 +76,11 @@ class UserController extends Controller
                         <i class="bi bi-pencil-square"></i>
                     </button>
                     '.$toggleBtn.'
-                    <button class="btn btn-sm btn-warning" title="Reset Password" onclick="openResetPasswordModal(\''.$user->users_id.'\', \''.$user->users_user_name.'\')">
-                        <i class="bi bi-key-fill"></i>
-                    </button>
                 </div>
             ';
-
+            // <button class="btn btn-sm btn-warning" title="Reset Password" onclick="openResetPasswordModal(\''.$user->users_id.'\', \''.$user->users_user_name.'\')">
+            //     <i class="bi bi-key-fill"></i>
+            // </button>
             $data[] = [
                 'users_user_name' => '<span class="font-bold">'.$user->users_user_name.'</span>',
                 'users_email' => $user->users_email,
@@ -107,7 +106,6 @@ class UserController extends Controller
             'password' => 'required|string|min:8',
             'password_confirmation' => 'required|same:password',
             'roles_uuid' => 'required|exists:roles,roles_uuid',
-            'status' => 'nullable|in:1,2'
         ]);
 
         if ($validator->fails()) {
@@ -124,7 +122,7 @@ class UserController extends Controller
             'users_email' => $request->users_email,
             'users_user_name' => $request->users_user_name,
             'users_password' => Hash::make($request->password),
-            'users_status' => $request->status ?? 1,
+            //'users_status' => $request->status ?? 1,
             'users_is_admin' => $request->users_is_admin ?? 0,
             'users_create_by' => current_user_uuid(),
             'users_create_date' => now()
@@ -147,7 +145,7 @@ class UserController extends Controller
             'users_user_name' => 'required|string|unique:users,users_user_name,' . $id . ',users_id',
             'users_email' => 'required|email|unique:users,users_email,' . $id . ',users_id',
             'roles_uuid' => 'required|exists:roles,roles_uuid',
-            'status' => 'required|in:1,2',
+            //'status' => 'required|in:1,2',
             'password' => 'nullable|string|min:8',
             'password_confirmation' => 'nullable|same:password',
         ]);
@@ -164,7 +162,7 @@ class UserController extends Controller
             'users_roles_uuid' => $request->roles_uuid,
             'users_email' => $request->users_email,
             'users_user_name' => $request->users_user_name,
-            'users_status' => $request->status,
+            //'users_status' => $request->status,
             'users_is_admin' => $request->users_is_admin ?? 0,
             'users_update_by' => current_user_uuid(),
             'users_update_date' => now()
@@ -287,7 +285,6 @@ class UserController extends Controller
 
         $user->update($updateData);
 
-        // Update session data
         Session::put('users_user_name', $request->users_user_name);
         Session::put('users_email', $request->users_email);
 

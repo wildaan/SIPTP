@@ -512,6 +512,7 @@
     <script src="{{ asset('vendor/jquery/jquery.min.js') }}"></script>
     <script src="{{ asset('vendor/choices/js/choices.min.js') }}"></script>
     <script src="{{ asset('vendor/sweetalert2/sweetalert2.min.js') }}"></script>
+    <script src="{{ asset('vendor/chart/chart.js') }}"></script>
     <script src="{{ asset('assets/js/ajax-helper.js') }}"></script>
 
     {{-- Sidebar JS (Standalone — no import/build required) --}}

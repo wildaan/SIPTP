@@ -84,6 +84,30 @@
             </div>
         </div>
 
+        {{-- DASHBOARD STATISTIK (CHART)  --}}
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0">Statistik Status Pengajuan</h4>
+                    </div>
+                    <div class="card-body">
+                        @if(empty($statusCounts))
+                            <div class="text-center text-muted py-5 w-100">
+                                Belum ada data pengajuan untuk ditampilkan.
+                            </div>
+                        @else
+                            {{-- Chart Container --}}
+                            <div style="position: relative; height: 350px; width: 100%;">
+                                <canvas id="statusBarChart"></canvas>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- END OF DASHBOARD STATISTIK --}}
+
         {{-- Tabel Pengajuan Terbaru --}}
         <div class="row">
             <div class="col-12">
@@ -120,11 +144,9 @@
                                         <td>
                                             @php
                                                 $statusMap = [
-                                                    1 => ['class' => 'secondary',  'text' => 'Draft'],
-                                                    2 => ['class' => 'info',       'text' => 'Submitted'],
-                                                    3 => ['class' => 'warning',    'text' => 'Waiting SPV'],
-                                                    4 => ['class' => 'warning',    'text' => 'Waiting Manager'],
-                                                    5 => ['class' => 'warning',    'text' => 'Waiting Director'],
+                                                    3 => ['class' => 'warning',    'text' => 'Waiting SPV Approval'],
+                                                    4 => ['class' => 'warning',    'text' => 'Waiting Manager Approval'],
+                                                    5 => ['class' => 'warning',    'text' => 'Waiting Director Approval'],
                                                     6 => ['class' => 'info',       'text' => 'Waiting Finance'],
                                                     7 => ['class' => 'success',    'text' => 'Paid'],
                                                     8 => ['class' => 'danger',     'text' => 'Rejected'],
@@ -195,4 +217,65 @@
         </div>
     </div>
 </section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const rawData = @json($statusCounts ?? []);
+
+    const ctx = document.getElementById('statusBarChart');
+    if (!ctx) return;
+
+    const statusMap = {
+        1: { label: 'Draft', color: '#6c757d' },           // secondary
+        2: { label: 'Submitted', color: '#0dcaf0' },       // info
+        3: { label: 'Waiting SPV Approval', color: '#ffc107' },     // warning
+        4: { label: 'Waiting Manager Approval', color: '#ffc107' }, // warning
+        5: { label: 'Waiting Director Approval', color: '#ffc107' },// warning
+        6: { label: 'Waiting Finance', color: '#0dcaf0' }, // info
+        7: { label: 'Paid', color: '#198754' },            // success
+        8: { label: 'Rejected', color: '#dc3545' }         // danger
+    };
+
+    const labels = [];
+    const dataPoints = [];
+    const backgroundColors = [];
+
+    for (let i = 1; i <= 8; i++) {
+        labels.push(statusMap[i].label);
+        dataPoints.push(rawData[i] || 0);
+        backgroundColors.push(statusMap[i].color);
+    }
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [{
+                label: 'Jumlah Pengajuan',
+                data: dataPoints,
+                backgroundColor: backgroundColors,
+                borderWidth: 1,
+                borderRadius: 4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+});
+</script>
 @endsection

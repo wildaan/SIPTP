@@ -54,10 +54,8 @@
                             <td>
                                 @php
                                     $statusMap = [
-                                        1 => ['class' => 'secondary',  'text' => 'Draft'],
-                                        2 => ['class' => 'info',       'text' => 'Submitted'],
-                                        3 => ['class' => 'warning',    'text' => 'Waiting SPV Approval'],
-                                        4 => ['class' => 'warning',    'text' => 'Waiting Manager Approval'],
+                                        3 => ['class' => 'secondary',    'text' => 'Waiting SPV Approval'],
+                                        4 => ['class' => 'info',    'text' => 'Waiting Manager Approval'],
                                         5 => ['class' => 'warning',    'text' => 'Waiting Director Approval'],
                                         6 => ['class' => 'info',       'text' => 'Waiting Finance'],
                                         7 => ['class' => 'success',    'text' => 'Paid'],

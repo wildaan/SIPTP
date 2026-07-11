@@ -151,13 +151,11 @@
 <script>
 $(document).ready(function () {
 
-    // Rupiah input keyup formatting
     $('#amount').on('keyup', function() {
         $(this).val(formatRupiah($(this).val()));
-        $(this).trigger('input'); // Refresh workflow hint
+        $(this).trigger('input');
     });
 
-    // Hint workflow berdasarkan nilai
     $('#amount').on('input', function () {
         const cleanVal = $(this).val().replace(/\D/g, '');
         const val = parseInt(cleanVal) || 0;
@@ -170,19 +168,20 @@ $(document).ready(function () {
             hint = 'Notes : Untuk nilai kurang dari Rp 5jt Alur Approval : SPV → Finance';
         }
 
-        const selText = $('#categories_uuid option:selected').text().toLowerCase();
-        if (selText.includes('po produk')) {
+        const selText = $('#categories_uuid option:selected')
+            .text()
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, ' ');
+        if(selText.includes('po produk')) {
             hint = 'Notes : Khusus untuk kategori PO Produk setelah diajukan langsung ke Direktur lalu Finance';
         }
         $('#workflowHint').text(hint);
     });
 
     $('#categories_uuid').on('change', function () {
-        // Trigger amount hint refresh
         $('#amount').trigger('input');
     });
 
-    // Dynamic Upload Table Handlers
     function getFormattedTime() {
         const now = new Date();
         const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -270,7 +269,6 @@ $(document).ready(function () {
         }
     });
 
-    // Submit via AJAX (FormData untuk support file upload)
     $('#btnSubmit').on('click', function () {
         const form = document.getElementById('submissionForm');
         if (!form.checkValidity()) {

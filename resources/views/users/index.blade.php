@@ -111,22 +111,12 @@
                     </div>
 
                     <div class="row mb-3">
-                        <label for="status" class="col-sm-4 col-form-label">Status</label>
-                        <div class="col-sm-8">
-                            <select class="form-select" id="status" name="status">
-                                <option value="1">Aktif</option>
-                                <option value="2">Tidak Aktif</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="row mb-3">
                         <label class="col-sm-4 col-form-label">Hak Akses</label>
                         <div class="col-sm-8">
                             <div class="form-check mt-2">
                                 <input class="form-check-input" type="checkbox" id="users_is_admin" name="users_is_admin" value="1">
                                 <label class="form-check-label" for="users_is_admin">
-                                    Jadikan sebagai Admin <small class="text-muted">(dapat mengelola user & audit trail)</small>
+                                    Jadikan sebagai Admin 
                                 </label>
                             </div>
                         </div>
