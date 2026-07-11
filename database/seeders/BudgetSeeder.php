@@ -11,32 +11,26 @@ class BudgetSeeder extends Seeder
     public function run(): void
     {
         $year = date('Y');
+
+        $atk         = DB::table('categories')->where('categories_code', 'ATK')->first();
+        $operasional = DB::table('categories')->where('categories_code', 'OP')->first();
         $budgets = [
             [
-                'budgets_uuid' => Str::uuid()->toString(),
-                'budgets_categories_uuid' => 'CAT-002', // ATK
-                'budgets_period_year' => $year,
-                'budgets_total_budget' => 5000000.00,
-                'budgets_used_budget' => 0.00,
-                'budgets_status' => 1,
+                'budgets_uuid'             => (string) Str::uuid(),
+                'budgets_categories_uuid'  => $atk->categories_uuid,
+                'budgets_period_year'      => $year,
+                'budgets_total_budget'     => 5000000.00,
+                'budgets_used_budget'      => 0.00,
+                'budgets_status'           => 1,
             ],
             [
-                'budgets_uuid' => Str::uuid()->toString(),
-                'budgets_categories_uuid' => 'CAT-003', // Operasional
-                'budgets_period_year' => $year,
-                'budgets_total_budget' => 20000000.00,
-                'budgets_used_budget' => 0.00,
-                'budgets_status' => 1,
+                'budgets_uuid'             => (string) Str::uuid(),
+                'budgets_categories_uuid'  => $operasional->categories_uuid,
+                'budgets_period_year'      => $year,
+                'budgets_total_budget'     => 20000000.00,
+                'budgets_used_budget'      => 0.00,
+                'budgets_status'           => 1,
             ],
-            [
-                'budgets_uuid' => Str::uuid()->toString(),
-                'budgets_categories_uuid' => 'CAT-004', // Marketing
-                'budgets_period_year' => $year,
-                'budgets_total_budget' => 15000000.00,
-                'budgets_used_budget' => 0.00,
-                'budgets_status' => 1,
-            ]
-            // PO Produk (CAT-001) sengaja tidak ada budget untuk mendemokan rule threshold > 10jt / PO
         ];
 
         foreach ($budgets as $budget) {

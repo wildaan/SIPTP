@@ -12,29 +12,29 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'categories_uuid' => 'CAT-001',
-                'categories_name' => 'PO Produk',
-                'categories_code' => 'PO',
+                'categories_uuid'   => (string) Str::uuid(),
+                'categories_name'   => 'PO Produk',
+                'categories_code'   => 'PO',
                 'categories_status' => 1,
             ],
             [
-                'categories_uuid' => 'CAT-002',
-                'categories_name' => 'ATK',
-                'categories_code' => 'ATK',
+                'categories_uuid'   => (string) Str::uuid(),
+                'categories_name'   => 'PO Produk - Aset Kantor',
+                'categories_code'   => 'PO-ASET',
                 'categories_status' => 1,
             ],
             [
-                'categories_uuid' => 'CAT-003',
-                'categories_name' => 'Operasional',
-                'categories_code' => 'OP',
+                'categories_uuid'   => (string) Str::uuid(),
+                'categories_name'   => 'ATK',
+                'categories_code'   => 'ATK',
                 'categories_status' => 1,
             ],
             [
-                'categories_uuid' => 'CAT-004',
-                'categories_name' => 'Marketing',
-                'categories_code' => 'MKT',
+                'categories_uuid'   => (string) Str::uuid(),
+                'categories_name'   => 'Operasional',
+                'categories_code'   => 'OP',
                 'categories_status' => 1,
-            ]
+            ],
         ];
 
         foreach ($categories as $category) {
