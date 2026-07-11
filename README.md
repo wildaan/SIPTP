@@ -75,7 +75,7 @@ Setelah menjalankan seeder, gunakan akun berikut untuk mencoba login sebagai ber
 | Manager | manager@test.com | password | - |
 | Direktur | direktur@test.com | password | - |
 | Finance | finance@test.com | password | - |
-| Admin | admin@test.com | password | Memiliki hak akses Kelola User (`users_is_admin = 1`) |
+| Admin | admin@test.com | password | Memiliki hak akses budget & kategory dan pengaturan (`users_is_admin = 1`) |
 
 *(Role "Admin" tidak dibuat sebagai entitas role terpisah di tabel `roles`, melainkan di-handle via flag `users_is_admin = 1` pada tabel `users`, agar tidak bentrok dengan logic threshold-based routing yang berbasis `roles_code`.)*
 
@@ -87,7 +87,7 @@ Dokumentasi API tersedia dalam bentuk **Postman Collection** di dalam folder `do
 - `docs/SIPTP.postman_collection.json` (Semua endpoint)
 - `docs/SIPTP.postman_environment.json` (Environment variables)
 
-Silakan import kedua file tersebut ke Postman. **Pastikan melakukan request Login terlebih dahulu** (di folder Auth) dengan Postman Interceptor/Cookie Jar aktif agar cookie session tersimpan untuk request berikutnya.
+ import kedua file tersebut ke Postman. **Pastikan melakukan request Login terlebih dahulu** (di folder Auth) dengan Postman Interceptor/Cookie Jar aktif agar cookie session tersimpan untuk request berikutnya.
 
 *(Catatan: Modul Dashboard tidak memiliki API endpoint JSON terpisah karena langsung di-render melalui Blade view.)*
 

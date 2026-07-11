@@ -399,7 +399,6 @@ class SubmissionController extends Controller
                     }
                 }
 
-                // Jika lanjut ke Finance, kirim notifikasi ke tim Finance
                 if ($action === 'approve' && $nextStatus == 6) {
                     $finances = User::whereHas('role', function($q){
                         $q->where('roles_code', 'finance');
@@ -494,7 +493,7 @@ class SubmissionController extends Controller
                 }
                 return response()->json([
                     'status'   => true,
-                    'message'  => 'Pengajuan telah ditolak (saldo tidak mencukupi).',
+                    'message'  => 'Pengajuan telah ditolak',
                     'redirect' => route('submissions.index')
                 ]);
             }
@@ -570,7 +569,7 @@ class SubmissionController extends Controller
 
             return response()->json([
                 'status'   => true,
-                'message'  => 'Pembayaran berhasil diproses. Status pengajuan menjadi Paid.',
+                'message'  => 'Pembayaran berhasil diproses.',
                 'redirect' => route('submissions.index')
             ]);
 
@@ -588,10 +587,11 @@ class SubmissionController extends Controller
         $is_admin = Session::get('users_is_admin');
         $userUuid = Session::get('users_uuid');
         $role_code = Session::get('roles_code');
+        
         $totalQuery = Submission::query();
-        $processQuery = Submission::where('submissions_user_uuid', $userUuid)->whereIn('submissions_status', [3, 4, 5, 6]);
-        $successQuery = Submission::where('submissions_user_uuid', $userUuid)->where('submissions_status', 7);
-        $rejectQuery = Submission::where('submissions_user_uuid', $userUuid)->where('submissions_status', 8);
+        $processQuery = Submission::whereIn('submissions_status', [3, 4, 5, 6]);
+        $successQuery = Submission::where('submissions_status', 7);
+        $rejectQuery = Submission::where('submissions_status', 8);
 
 
         $recentSubmissionsQuery = [];
@@ -600,6 +600,8 @@ class SubmissionController extends Controller
             $recentSubmissionsQuery = Submission::where('submissions_status', 3)->with('category', 'user');
         } else if($role_code == 'manager') {
             $recentSubmissionsQuery = Submission::where('submissions_status', 4)->with('category', 'user');
+        } else if($role_code == 'direktur') {
+            $recentSubmissionsQuery = Submission::where('submissions_status', 5)->with('category', 'user');
         } else if($role_code == 'finance') {
             $recentSubmissionsQuery = Submission::where('submissions_status', 6)->with('category', 'user');
         } else {
@@ -616,10 +618,16 @@ class SubmissionController extends Controller
 
         $recentActivityQuery = \App\Models\UserActivity::where('user_activity_user_uuid',$userUuid)
                                 ->orderBy('user_activity_create_date', 'desc');
-
         $recentActivity = $recentActivityQuery->limit(5)->get();
+
+        $statusCounts = Submission::selectRaw('submissions_status, COUNT(*) as total')
+                        ->groupBy('submissions_status')
+                        ->pluck('total', 'submissions_status')
+                        ->toArray();
+        
+
         logActivity('VIEW_DASHBOARD', 'Melihat halaman dashboard');
-        return view('dashboard', compact('stats', 'recentSubmissions', 'recentActivity'));
+        return view('dashboard', compact('stats', 'recentSubmissions', 'recentActivity', 'statusCounts'));
     }
 
     public function exportExcel()
@@ -664,11 +672,14 @@ class SubmissionController extends Controller
         $headers = [
             'Content-Type'        => 'application/vnd.ms-excel',
             'Content-Disposition' => 'attachment; filename="' . $filename . '"',
+            'Cache-Control'       => 'max-age=0',
         ];
 
         $callback = function () use ($submissions, $statusMap) {
             $output = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-            $output .= '<head><meta charset="UTF-8"><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>Pengajuan</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--></head>';
+            $output .= '<head><meta charset="UTF-8">';
+            $output .= '';
+            $output .= '</head>';
             $output .= '<body>';
             $output .= '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">';
             $output .= '<thead>';
@@ -692,7 +703,9 @@ class SubmissionController extends Controller
                 $output .= '<td style="border: 1px solid #000;">' . date('d/m/Y', strtotime($sub->submissions_date)) . '</td>';
                 $output .= '<td style="border: 1px solid #000;">' . htmlspecialchars($sub->user->users_user_name ?? '-') . '</td>';
                 $output .= '<td style="border: 1px solid #000;">' . htmlspecialchars($sub->category->categories_name ?? '-') . '</td>';
-                $output .= '<td style="border: 1px solid #000; text-align: right;">' . number_format($sub->submissions_amount, 0, ',', '.') . '</td>';
+                
+                $output .= '<td style="border: 1px solid #000; text-align: right;">' . $sub->submissions_amount . '</td>';
+                
                 $output .= '<td style="border: 1px solid #000;">' . ($statusMap[$sub->submissions_status] ?? 'Unknown') . '</td>';
                 $output .= '</tr>';
             }
