@@ -84,45 +84,69 @@
                 <div class="modal-body">
                     <input type="hidden" id="user_id" name="user_id">
                     
-                    <div class="mb-3">
-                        <label for="users_user_name" class="form-label">Username <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="users_user_name" name="users_user_name" placeholder="Masukan Username" required>
+                    <div class="row mb-3">
+                        <label for="users_user_name" class="col-sm-4 col-form-label">Username <span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" id="users_user_name" name="users_user_name" placeholder="Masukan Username" required>
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="users_email" class="form-label">Email <span class="text-danger">*</span></label>
-                        <input type="email" class="form-control" id="users_email" name="users_email" placeholder="Masukan Email" required>
+                    <div class="row mb-3">
+                        <label for="users_email" class="col-sm-4 col-form-label">Email <span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="email" class="form-control" id="users_email" name="users_email" placeholder="Masukan Email" required>
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="roles_uuid" class="form-label">Role <span class="text-danger">*</span></label>
-                        <select class="form-select" id="roles_uuid" name="roles_uuid" required>
-                            <option value="">-- Pilih Role --</option>
-                            @foreach($roles as $role)
-                                <option value="{{ $role->roles_uuid }}">{{ $role->roles_name }}</option>
-                            @endforeach
-                        </select>
+                    <div class="row mb-3">
+                        <label for="roles_uuid" class="col-sm-4 col-form-label">Role <span class="text-danger">*</span></label>
+                        <div class="col-sm-8">
+                            <select class="form-select" id="roles_uuid" name="roles_uuid" required>
+                                <option value="">-- Pilih Role --</option>
+                                @foreach($roles as $role)
+                                    <option value="{{ $role->roles_uuid }}">{{ $role->roles_name }}</option>
+                                @endforeach
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="mb-3">
-                        <label for="status" class="form-label">Status</label>
-                        <select class="form-select" id="status" name="status">
-                            <option value="1">Aktif</option>
-                            <option value="2">Tidak Aktif</option>
-                        </select>
+                    <div class="row mb-3">
+                        <label for="status" class="col-sm-4 col-form-label">Status</label>
+                        <div class="col-sm-8">
+                            <select class="form-select" id="status" name="status">
+                                <option value="1">Aktif</option>
+                                <option value="2">Tidak Aktif</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <label class="col-sm-4 col-form-label">Hak Akses</label>
+                        <div class="col-sm-8">
+                            <div class="form-check mt-2">
+                                <input class="form-check-input" type="checkbox" id="users_is_admin" name="users_is_admin" value="1">
+                                <label class="form-check-label" for="users_is_admin">
+                                    Jadikan sebagai Admin <small class="text-muted">(dapat mengelola user & audit trail)</small>
+                                </label>
+                            </div>
+                        </div>
                     </div>
 
                     <hr>
                     
-                    <div class="mb-3">
-                        <label for="password" class="form-label">Password <span class="text-danger id-pass-req">*</span></label>
-                        <input type="password" class="form-control" id="password" name="password" placeholder="Masukan Password">
-                        <div class="form-text id-pass-help" style="display:none;">Kosongkan jika tidak ingin mengubah password.</div>
+                    <div class="row mb-3">
+                        <label for="password" class="col-sm-4 col-form-label">Password <span class="text-danger id-pass-req">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="Masukan Password">
+                            <div class="form-text id-pass-help" style="display:none;">Kosongkan jika tidak ingin mengubah password.</div>
+                        </div>
                     </div>
                     
-                    <div class="mb-3">
-                        <label for="password_confirmation" class="form-label">Konfirmasi Password <span class="text-danger id-pass-req">*</span></label>
-                        <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password">
+                    <div class="row mb-3">
+                        <label for="password_confirmation" class="col-sm-4 col-form-label">Konfirmasi Password <span class="text-danger id-pass-req">*</span></label>
+                        <div class="col-sm-8">
+                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password">
+                        </div>
                     </div>
 
                 </div>
@@ -237,12 +261,15 @@
         $('#password, #password_confirmation').prop('required', true);
         $('.id-pass-req').show();
         $('.id-pass-help').hide();
+
+        // Reset admin checkbox
+        $('#users_is_admin').prop('checked', false);
         
         userModal.show();
     }
 
     // OPEN EDIT MODAL
-    function openEditModal(id, username, email, roleUuid, status) {
+    function openEditModal(id, username, email, roleUuid, status, isAdmin) {
         $('#formUser')[0].reset();
         $('#user_id').val(id);
         $('#modalUserFormTitle').text('Edit User');
@@ -251,6 +278,9 @@
         $('#users_email').val(email);
         $('#roles_uuid').val(roleUuid);
         $('#status').val(status);
+
+        // Set admin checkbox
+        $('#users_is_admin').prop('checked', isAdmin == 1);
         
         // Atur password tidak wajib
         $('#password, #password_confirmation').prop('required', false);
@@ -272,6 +302,7 @@
             users_email: $('#users_email').val(),
             roles_uuid: $('#roles_uuid').val(),
             status: $('#status').val(),
+            users_is_admin: $('#users_is_admin').is(':checked') ? 1 : 0,
             password: $('#password').val(),
             password_confirmation: $('#password_confirmation').val(),
         };

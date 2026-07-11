@@ -27,18 +27,16 @@ Route::middleware(['auth.session'])->group(function () {
         Route::post('/', [SubmissionController::class, 'store'])->name('submissions.store');
         Route::get('/history', [SubmissionController::class, 'history'])->name('submissions.history');
         Route::get('/export-excel', [SubmissionController::class, 'exportExcel'])->name('submissions.exportExcel');
-        Route::get('/{id}', [SubmissionController::class, 'show'])->name('submissions.show');
+        Route::get('/details/{id}', [SubmissionController::class, 'show'])->name('submissions.show');
         Route::get('/{id}/export-pdf', [SubmissionController::class, 'exportPdf'])->name('submissions.exportPdf');
-
         // Approvals
-        Route::post('/{id}/approve', [\App\Http\Controllers\ApprovalController::class, 'store'])->name('submissions.approve');
-
+        Route::post('/{id}/approve', [SubmissionController::class, 'approve'])->name('submissions.approve');
         // Payments
-        Route::post('/{id}/pay', [\App\Http\Controllers\PaymentController::class, 'store'])->name('submissions.pay');
+        Route::post('/payment/{id}', [SubmissionController::class, 'payment'])->name('submissions.payment');
     });
 
 
-    Route::middleware(['role:staff'])->prefix('users')->group(function () {
+    Route::prefix('users')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('users.index');
         Route::get('/list', [UserController::class, 'list']);
         Route::post('/', [UserController::class, 'store']);
@@ -47,17 +45,24 @@ Route::middleware(['auth.session'])->group(function () {
         Route::post('/{id}/reset-password', [UserController::class, 'resetPassword']);
     });
 
-    Route::middleware(['role:staff'])->group(function () {
-        // Categories
-        Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
-        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
-        Route::post('/categories/{uuid}', [CategoryController::class, 'update'])->name('categories.update');
-        Route::post('/categories/{uuid}/toggle-status', [CategoryController::class, 'toggleStatus'])->name('categories.toggleStatus');
-
-        // Budgets
-        Route::get('/budgets', [BudgetController::class, 'index'])->name('budgets.index');
-        Route::post('/budgets', [BudgetController::class, 'store'])->name('budgets.store');
-        Route::post('/budgets/{uuid}', [BudgetController::class, 'update'])->name('budgets.update');
+    //Category
+    Route::controller(CategoryController::class)->group(function () {
+        Route::get('/categories', 'index')->name('categories.index');
+        Route::post('/categories', 'store')->name('categories.store');
+        Route::post('/categories/{uuid}', 'update')->name('categories.update');
+        Route::post('/categories/{uuid}/toggle-status', 'toggleStatus')->name('categories.toggleStatus');
     });
+
+    //Budget
+    Route::controller(BudgetController::class)->group(function () {
+        Route::get('/budgets', 'index')->name('budgets.index');
+        Route::post('/budgets', 'store')->name('budgets.store');
+        Route::post('/budgets/{uuid}', 'update')->name('budgets.update');
+    });
+
+    Route::post('/profile/update', [UserController::class, 'updateProfile'])->name('profile.update');
+
+    Route::get('/audit-trail', [UserController::class, 'auditTrail'])->name('audit-trail.index');
+    Route::get('/audit-trail/list', [UserController::class, 'auditTrailList'])->name('audit-trail.list');
 
 });

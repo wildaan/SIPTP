@@ -550,7 +550,7 @@
             </div>
             <div class="brand-feature">
                 <i class="bi bi-graph-up-arrow"></i>
-                <span>Pantau status pengajuan</span>
+                <span>Pantau status pengajuan transaksi pengeluaran</span>
             </div>
         </div>
     </div>

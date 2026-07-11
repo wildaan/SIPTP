@@ -11,6 +11,7 @@ class CategoryController extends Controller
     public function index()
     {
         $categories = Category::orderBy('categories_create_date', 'desc')->get();
+        logActivity('VIEW_CATEGORIES', 'Melihat daftar kategori');
         return view('categories.index', compact('categories'));
     }
 
@@ -27,6 +28,8 @@ class CategoryController extends Controller
             'categories_create_by' => Session::get('users_uuid'),
             'categories_status'    => 1
         ]);
+
+        logActivity('CREATE_CATEGORY', "Menambahkan kategori baru: {$request->categories_name} ({$request->categories_code})");
 
         return response()->json([
             'status'  => true,
@@ -49,6 +52,8 @@ class CategoryController extends Controller
             'categories_update_by' => Session::get('users_uuid')
         ]);
 
+        logActivity('UPDATE_CATEGORY', "Mengubah kategori: {$category->categories_name} menjadi {$request->categories_name} ({$request->categories_code})");
+
         return response()->json([
             'status'  => true,
             'message' => 'Kategori berhasil diubah.'
@@ -66,6 +71,8 @@ class CategoryController extends Controller
         ]);
 
         $statusName = $newStatus == 1 ? 'diaktifkan' : 'dinonaktifkan';
+
+        logActivity('TOGGLE_STATUS_CATEGORY', "Mengubah status kategori {$category->categories_name} menjadi " . ($newStatus == 1 ? 'Aktif' : 'Non-Aktif'));
 
         return response()->json([
             'status'  => true,

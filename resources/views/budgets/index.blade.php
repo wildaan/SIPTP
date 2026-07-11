@@ -63,8 +63,8 @@
                                 <button class="btn btn-sm btn-outline-warning btn-edit-budget"
                                     data-uuid="{{ $bud->budgets_uuid }}"
                                     data-category="{{ $bud->category->categories_name ?? '-' }}"
-                                    data-total="{{ $bud->budgets_total_budget }}"
-                                    data-used="{{ $bud->budgets_used_budget }}">
+                                    data-total="{{ (int) $bud->budgets_total_budget }}"
+                                    data-used="{{ (int) $bud->budgets_used_budget }}">
                                     <i class="bi bi-pencil-fill"></i> Ubah Limit
                                 </button>
                             </td>
@@ -91,9 +91,11 @@
                     <strong>Budget terpakai saat ini:</strong> <span id="edit_used_label">Rp 0</span><br>
                     Total budget baru tidak boleh lebih kecil dari angka terpakai di atas.
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Total Budget Baru (Rp)</label>
-                    <input type="text" class="form-control" id="edit_total" placeholder="Masukan Total Budget Baru (Rp)" required>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Total Budget Baru (Rp)</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="edit_total" placeholder="Masukan Total Budget Baru (Rp)" required>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -113,26 +115,32 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Tahun Periode</label>
-                    <select class="form-select" id="create_year" required>
-                        @for($i = date('Y') + 1; $i >= 2020; $i--)
-                            <option value="{{ $i }}" {{ date('Y') == $i ? 'selected' : '' }}>{{ $i }}</option>
-                        @endfor
-                    </select>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Tahun Periode</label>
+                    <div class="col-sm-8">
+                        <select class="form-select" id="create_year" required>
+                            @for($i = date('Y') + 1; $i >= 2020; $i--)
+                                <option value="{{ $i }}" {{ date('Y') == $i ? 'selected' : '' }}>{{ $i }}</option>
+                            @endfor
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Kategori</label>
-                    <select class="form-select" id="create_category_uuid" required>
-                        <option value="" disabled selected>-- Pilih Kategori --</option>
-                        @foreach($categories as $cat)
-                            <option value="{{ $cat->categories_uuid }}">{{ $cat->categories_name }}</option>
-                        @endforeach
-                    </select>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Kategori</label>
+                    <div class="col-sm-8">
+                        <select class="form-select" id="create_category_uuid" required>
+                            <option value="" disabled selected>-- Pilih Kategori --</option>
+                            @foreach($categories as $cat)
+                                <option value="{{ $cat->categories_uuid }}">{{ $cat->categories_name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Total Budget (Rp)</label>
-                    <input type="text" class="form-control" id="create_total" placeholder="Masukan Total Budget (Rp)" required>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Total Budget (Rp)</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="create_total" placeholder="Masukan Total Budget (Rp)" required>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -158,12 +166,10 @@ $(document).ready(function () {
         }
     });
 
-    // Rupiah input keyup formatting
     $('#create_total, #edit_total').on('keyup', function() {
         $(this).val(formatRupiah($(this).val()));
     });
 
-    // === CREATE ===
     $('#btnSaveCreate').on('click', function () {
         const year = $('#create_year').val();
         const catUuid = $('#create_category_uuid').val();
@@ -189,12 +195,11 @@ $(document).ready(function () {
         });
     });
 
-    // === EDIT — Open Modal ===
     $(document).on('click', '.btn-edit-budget', function () {
         const uuid = $(this).data('uuid');
         const category = $(this).data('category');
-        const total = $(this).data('total');
-        const used = $(this).data('used');
+        const total = Math.round(parseFloat($(this).data('total'))) || 0;
+        const used = Math.round(parseFloat($(this).data('used'))) || 0;
 
         $('#edit_uuid').val(uuid);
         $('#edit_total').val(formatRupiah(String(total))).data('min-val', used);
@@ -204,7 +209,6 @@ $(document).ready(function () {
         new bootstrap.Modal(document.getElementById('editModal')).show();
     });
 
-    // === EDIT — Save ===
     $('#btnSaveEdit').on('click', function () {
         const uuid = $('#edit_uuid').val();
         const rawTotal = $('#edit_total').val().replace(/\D/g, '');

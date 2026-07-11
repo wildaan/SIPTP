@@ -80,13 +80,17 @@
             </div>
             <div class="modal-body">
                 <input type="hidden" id="edit_uuid">
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Kode Kategori</label>
-                    <input type="text" class="form-control" id="edit_code" required>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Kode Kategori</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="edit_code" required>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Nama Kategori</label>
-                    <input type="text" class="form-control" id="edit_name" required>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Nama Kategori</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="edit_name" required>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -106,14 +110,18 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Kode Kategori</label>
-                    <input type="text" class="form-control" id="create_code" placeholder="Masukan Kode Kategori" required>
-                    <div class="form-text">Kode harus unik.</div>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Kode Kategori</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="create_code" placeholder="Masukan Kode Kategori" required>
+                        <div class="form-text">Kode harus unik.</div>
+                    </div>
                 </div>
-                <div class="form-group mb-3">
-                    <label class="form-label fw-semibold">Nama Kategori</label>
-                    <input type="text" class="form-control" id="create_name" placeholder="Masukan Nama Kategori" required>
+                <div class="row mb-3">
+                    <label class="col-sm-4 col-form-label fw-semibold">Nama Kategori</label>
+                    <div class="col-sm-8">
+                        <input type="text" class="form-control" id="create_name" placeholder="Masukan Nama Kategori" required>
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">

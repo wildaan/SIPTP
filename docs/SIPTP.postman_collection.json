@@ -1,0 +1,846 @@
+{
+	"info": {
+		"_postman_id": "c1f753c0-3b47-4952-b8e1-5e7e0e5a8f4c",
+		"name": "SIPTP API",
+		"description": "Dokumentasi API lengkap untuk aplikasi SIPTP (Sistem Informasi Pengajuan Transaksi Pengeluaran).\n\n**PENTING - AUTENTIKASI:**\nAplikasi ini menggunakan autentikasi berbasis SESSION (bukan token). Untuk menggunakan endpoint dalam collection ini:\n1. Pastikan fitur **Cookie Jar / Postman Interceptor** aktif di Postman Anda.\n2. Jalankan request **Login** terlebih dahulu (di folder Auth).\n3. Postman akan menyimpan session cookie (XSRF-TOKEN & laravel_session) secara otomatis.\n4. Anda bisa menjalankan request lainnya.\n\n*Catatan: Dashboard (Home) hanya me-render view Blade secara langsung dan tidak memiliki endpoint API JSON terpisah sehingga tidak ada di collection ini.*",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"username\": \"staff@test.com\",\n    \"password\": \"password\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/login",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"login"
+							]
+						},
+						"description": "Fungsi: Login ke sistem.\nSemua role bisa menggunakan ini."
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/logout",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"logout"
+							]
+						},
+						"description": "Fungsi: Logout dari sistem."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User Management",
+			"item": [
+				{
+					"name": "List Users (Datatable)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/list?start=0&length=10&draw=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"list"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "length",
+									"value": "10"
+								},
+								{
+									"key": "draw",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Fungsi: Mengambil data user untuk datatable.\nAkses: Admin (is_admin = 1)."
+					},
+					"response": []
+				},
+				{
+					"name": "Create User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"users_user_name\": \"John Doe\",\n    \"users_email\": \"johndoe@test.com\",\n    \"password\": \"password\",\n    \"password_confirmation\": \"password\",\n    \"roles_uuid\": \"UUID_ROLE\",\n    \"status\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users"
+							]
+						},
+						"description": "Fungsi: Menambahkan user baru.\nAkses: Admin."
+					},
+					"response": []
+				},
+				{
+					"name": "Update User",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"users_user_name\": \"John Doe Updated\",\n    \"users_email\": \"johndoe@test.com\",\n    \"roles_uuid\": \"UUID_ROLE\",\n    \"status\": \"1\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1"
+							]
+						},
+						"description": "Fungsi: Update user by ID.\nAkses: Admin."
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/users/1/toggle-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"toggle-status"
+							]
+						},
+						"description": "Fungsi: Mengaktifkan/menonaktifkan user.\nAkses: Admin."
+					},
+					"response": []
+				},
+				{
+					"name": "Reset Password",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"password\": \"newpassword\",\n    \"password_confirmation\": \"newpassword\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/users/1/reset-password",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"users",
+								"1",
+								"reset-password"
+							]
+						},
+						"description": "Fungsi: Reset password user by ID.\nAkses: Admin."
+					},
+					"response": []
+				},
+                {
+					"name": "Audit Trail List",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/audit-trail/list?start=0&length=10&draw=1",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"audit-trail",
+								"list"
+							],
+							"query": [
+								{
+									"key": "start",
+									"value": "0"
+								},
+								{
+									"key": "length",
+									"value": "10"
+								},
+								{
+									"key": "draw",
+									"value": "1"
+								}
+							]
+						},
+						"description": "Fungsi: Melihat log aktivitas (Datatable).\nAkses: Admin."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Submission",
+			"item": [
+				{
+					"name": "Submit Pengajuan",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "categories_uuid",
+									"value": "UUID_KATEGORI",
+									"type": "text"
+								},
+								{
+									"key": "submission_number",
+									"value": "SUB-20260711-0001",
+									"type": "text"
+								},
+								{
+									"key": "submissions_date",
+									"value": "2026-07-11",
+									"type": "text"
+								},
+								{
+									"key": "amount",
+									"value": "5000000",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "Pembelian ATK",
+									"type": "text"
+								},
+								{
+									"key": "documents[]",
+									"type": "file",
+									"src": []
+								}
+							]
+						},
+						"url": {
+							"raw": "{{base_url}}/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions"
+							]
+						},
+						"description": "Fungsi: Mengajukan transaksi baru.\nAkses: Staff."
+					},
+					"response": []
+				},
+				{
+					"name": "List Pengajuan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/submissions",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions"
+							]
+						},
+						"description": "Fungsi: Melihat daftar pengajuan (view HTML).\nAkses: Semua role."
+					},
+					"response": []
+				},
+				{
+					"name": "Detail Pengajuan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/submissions/details/UUID_SUBMISSION",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"details",
+								"UUID_SUBMISSION"
+							]
+						},
+						"description": "Fungsi: Melihat detail (view HTML).\nAkses: Semua role terkait pengajuan."
+					},
+					"response": []
+				},
+				{
+					"name": "History Pengajuan",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/submissions/history",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"history"
+							]
+						},
+						"description": "Fungsi: Riwayat pengajuan yang sudah diproses (view HTML).\nAkses: SPV, Manager, Direktur, Finance."
+					},
+					"response": []
+				},
+                {
+					"name": "Export Excel",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/submissions/export-excel",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"export-excel"
+							]
+						},
+						"description": "Fungsi: Export ke file CSV/Excel.\nAkses: Semua role."
+					},
+					"response": []
+				},
+                {
+					"name": "Export PDF",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/submissions/UUID_SUBMISSION/export-pdf",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"UUID_SUBMISSION",
+                                "export-pdf"
+							]
+						},
+						"description": "Fungsi: Export bukti pengajuan berstatus Paid ke PDF.\nAkses: Pengaju (Staff) / Finance."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Approval",
+			"item": [
+				{
+					"name": "Approve / Reject",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"approve\",\n    \"notes\": \"Silahkan diproses\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/submissions/UUID_SUBMISSION/approve",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"UUID_SUBMISSION",
+								"approve"
+							]
+						},
+						"description": "Fungsi: Menyetujui atau menolak pengajuan. 'action' bisa 'approve' atau 'reject'.\nAkses: SPV, Manager, Direktur."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Finance",
+			"item": [
+				{
+					"name": "Payment",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"action\": \"pay\",\n    \"payment_method\": 1,\n    \"notes\": \"Sudah ditransfer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/submissions/payment/UUID_SUBMISSION",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"submissions",
+								"payment",
+								"UUID_SUBMISSION"
+							]
+						},
+						"description": "Fungsi: Membayar atau menolak pengajuan karena budget tidak cukup. 'action' bisa 'pay' atau 'reject'.\nAkses: Finance."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Category",
+			"item": [
+				{
+					"name": "Create Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories_name\": \"Kategori Baru\",\n    \"categories_code\": \"KAT01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/categories",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories"
+							]
+						},
+						"description": "Fungsi: Menambahkan kategori baru."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"categories_name\": \"Kategori Update\",\n    \"categories_code\": \"KAT01\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/categories/UUID_KATEGORI",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories",
+								"UUID_KATEGORI"
+							]
+						},
+						"description": "Fungsi: Update data kategori."
+					},
+					"response": []
+				},
+				{
+					"name": "Toggle Category Status",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"url": {
+							"raw": "{{base_url}}/categories/UUID_KATEGORI/toggle-status",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"categories",
+								"UUID_KATEGORI",
+								"toggle-status"
+							]
+						},
+						"description": "Fungsi: Mengaktifkan/menonaktifkan kategori."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Budget",
+			"item": [
+				{
+					"name": "Create Budget",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"budgets_categories_uuid\": \"UUID_KATEGORI\",\n    \"budgets_period_year\": \"2026\",\n    \"budgets_total_budget\": \"15000000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/budgets",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"budgets"
+							]
+						},
+						"description": "Fungsi: Alokasi budget tahunan per kategori."
+					},
+					"response": []
+				},
+				{
+					"name": "Update Budget",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"budgets_total_budget\": \"20000000\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/budgets/UUID_BUDGET",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"budgets",
+								"UUID_BUDGET"
+							]
+						},
+						"description": "Fungsi: Update nominal budget (tidak boleh lebih kecil dari yang sudah terpakai)."
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Update Profile",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							},
+							{
+								"key": "X-Requested-With",
+								"value": "XMLHttpRequest"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"users_user_name\": \"My New Name\",\n    \"users_email\": \"mynewemail@test.com\",\n    \"password\": \"\",\n    \"password_confirmation\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{base_url}}/profile/update",
+							"host": [
+								"{{base_url}}"
+							],
+							"path": [
+								"profile",
+								"update"
+							]
+						},
+						"description": "Fungsi: Mengubah profil sendiri."
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"if (pm.request.method !== 'GET') {",
+					"    pm.sendRequest({",
+					"        url: pm.environment.get('base_url') + '/login',",
+					"        method: 'GET'",
+					"    }, function (err, res) {",
+					"        if (!err && res) {",
+					"            var match = res.text().match(/<meta name=\"csrf-token\" content=\"([^\"]+)\"/);",
+					"            if (match && match[1]) {",
+					"                pm.request.headers.add({",
+					"                    key: 'X-CSRF-TOKEN',",
+					"                    value: match[1]",
+					"                });",
+					"            }",
+					"        }",
+					"    });",
+					"}"
+				]
+			}
+		}
+	]
+}

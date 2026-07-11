@@ -178,14 +178,13 @@
                 <div class="recent-message d-flex px-4 py-3 border-bottom">
                     <div class="name">
                         <h6 class="mb-1 text-sm">
-                            {{ $act->approvals_status == 1 ? 'Disetujui' : 'Ditolak' }}:
-                            {{ $act->submission->category->categories_name ?? 'Pengajuan' }}
+                            {{ $act->user_activity_action }}
                         </h6>
                         <small class="text-muted mb-0 d-block">
-                            Oleh: {{ $act->user->users_user_name ?? '-' }} ({{ $act->role->roles_name ?? '-' }})
+                            {{ $act->user_activity_description }}
                         </small>
                         <small class="text-muted d-block" style="font-size: 0.75rem;">
-                            {{ \Carbon\Carbon::parse($act->approvals_action_date)->diffForHumans() }}
+                            {{ \Carbon\Carbon::parse($act->user_activity_create_date)->diffForHumans() }}
                         </small>
                     </div>
                 </div>
