@@ -94,7 +94,6 @@
 </head>
 <body>
     <div class="header">
-        <h1>DETAIL PENGAJUAN DANA (PAID)</h1>
         <p>Sistem Informasi Pengajuan Transaksi Pengeluaran (SIPTP)</p>
     </div>
 
