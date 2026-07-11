@@ -5,15 +5,18 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Role;
+use App\Models\UserActivity;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Session;
 
 class UserController extends Controller
 {
     public function index(Request $request)
     {
         $roles = Role::where('roles_status', 1)->get();
+        logActivity('VIEW_USERS', 'Melihat halaman kelola user');
         return view('users.index', compact('roles'));
     }
 
@@ -69,7 +72,7 @@ class UserController extends Controller
             $actionButtons = '
                 <div class="text-center">
                     <button class="btn btn-sm btn-info me-1" title="Edit"
-                        onclick="openEditModal(\''.$user->users_id.'\', \''.$user->users_user_name.'\', \''.$user->users_email.'\', \''.$user->users_roles_uuid.'\', \''.$user->users_status.'\')">
+                        onclick="openEditModal(\''.$user->users_id.'\', \''.$user->users_user_name.'\', \''.$user->users_email.'\', \''.$user->users_roles_uuid.'\', \''.$user->users_status.'\', \''.($user->users_is_admin ?? 0).'\')">
                         <i class="bi bi-pencil-square"></i>
                     </button>
                     '.$toggleBtn.'
@@ -122,6 +125,7 @@ class UserController extends Controller
             'users_user_name' => $request->users_user_name,
             'users_password' => Hash::make($request->password),
             'users_status' => $request->status ?? 1,
+            'users_is_admin' => $request->users_is_admin ?? 0,
             'users_create_by' => current_user_uuid(),
             'users_create_date' => now()
         ]);
@@ -161,6 +165,7 @@ class UserController extends Controller
             'users_email' => $request->users_email,
             'users_user_name' => $request->users_user_name,
             'users_status' => $request->status,
+            'users_is_admin' => $request->users_is_admin ?? 0,
             'users_update_by' => current_user_uuid(),
             'users_update_date' => now()
         ];
@@ -238,6 +243,126 @@ class UserController extends Controller
             'status' => true,
             'message' => 'Password berhasil direset',
             'data' => []
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $userUuid = current_user_uuid();
+        $user = User::where('users_uuid', $userUuid)->firstOrFail();
+
+        $validator = Validator::make($request->all(), [
+            'users_user_name' => 'required|string|unique:users,users_user_name,' . $user->users_id . ',users_id',
+            'users_email'     => 'required|email|unique:users,users_email,' . $user->users_id . ',users_id',
+            'password'        => 'nullable|string|min:8',
+            'password_confirmation' => 'nullable|same:password',
+        ], [
+            'users_user_name.required' => 'Username wajib diisi.',
+            'users_user_name.unique'   => 'Username sudah digunakan.',
+            'users_email.required'     => 'Email wajib diisi.',
+            'users_email.email'        => 'Format email tidak valid.',
+            'users_email.unique'       => 'Email sudah digunakan.',
+            'password.min'             => 'Password minimal 8 karakter.',
+            'password_confirmation.same' => 'Konfirmasi password tidak cocok.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $updateData = [
+            'users_user_name' => $request->users_user_name,
+            'users_email'     => $request->users_email,
+            'users_update_by' => $userUuid,
+            'users_update_date' => now()
+        ];
+
+        if ($request->filled('password')) {
+            $updateData['users_password'] = Hash::make($request->password);
+        }
+
+        $user->update($updateData);
+
+        // Update session data
+        Session::put('users_user_name', $request->users_user_name);
+        Session::put('users_email', $request->users_email);
+
+        logActivity('UPDATE_PROFILE', "User mengubah profil sendiri");
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Profil berhasil diperbarui',
+            'data' => []
+        ]);
+    }
+
+    public function auditTrail()
+    {
+        if (is_admin() != 1) {
+            abort(403, 'Anda tidak memiliki akses ke halaman ini.');
+        }
+
+        logActivity('VIEW_AUDIT_TRAIL', 'Melihat halaman audit trail');
+
+        return view('users.audit-trail');
+    }
+
+    public function auditTrailList(Request $request)
+    {
+        if (is_admin() != 1) {
+            return response()->json(['status' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $query = UserActivity::with('user');
+        $recordsTotal = UserActivity::count();
+
+        // Datatables Global Search
+        if ($request->has('search') && !empty($request->search['value'])) {
+            $search = $request->search['value'];
+            $query->where(function($q) use ($search) {
+                $q->where('user_activity_action', 'like', "%{$search}%")
+                  ->orWhere('user_activity_description', 'like', "%{$search}%")
+                  ->orWhere('user_activity_ip_address', 'like', "%{$search}%")
+                  ->orWhereHas('user', function($uq) use ($search) {
+                      $uq->where('users_user_name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        $recordsFiltered = $query->count();
+
+        // Pagination
+        $start = $request->input('start', 0);
+        $length = $request->input('length', 10);
+
+        if ($length > 0) {
+            $query->offset($start)->limit($length);
+        }
+
+        $query->orderBy('user_activity_create_date', 'desc');
+
+        $activities = $query->get();
+        $data = [];
+
+        foreach ($activities as $activity) {
+            $data[] = [
+                'user_name'   => $activity->user->users_user_name ?? 'System',
+                'action'      => '<span class="badge bg-light-primary text-primary">' . $activity->user_activity_action . '</span>',
+                'description' => $activity->user_activity_description,
+                'ip_address'  => $activity->user_activity_ip_address,
+                'created_at'  => date('d M Y H:i:s', strtotime($activity->user_activity_create_date)),
+            ];
+        }
+
+        return response()->json([
+            'draw' => intval($request->input('draw')),
+            'recordsTotal' => $recordsTotal,
+            'recordsFiltered' => $recordsFiltered,
+            'data' => $data
         ]);
     }
 }

@@ -20,6 +20,8 @@ class BudgetController extends Controller
 
         $categories = Category::where('categories_status', 1)->get();
 
+        logActivity('VIEW_BUDGETS', "Melihat daftar alokasi budget tahun {$year}");
+
         return view('budgets.index', compact('budgets', 'categories', 'year'));
     }
 
@@ -55,6 +57,10 @@ class BudgetController extends Controller
             'budgets_status'          => 1
         ]);
 
+        $category = Category::where('categories_uuid', $request->budgets_categories_uuid)->first();
+        $catName = $category ? $category->categories_name : '-';
+        logActivity('CREATE_BUDGET', "Menambahkan alokasi budget untuk kategori {$catName} tahun {$request->budgets_period_year} sebesar Rp " . number_format($request->budgets_total_budget, 0, ',', '.'));
+
         return response()->json([
             'status'  => true,
             'message' => 'Budget berhasil ditambahkan.',
@@ -85,6 +91,9 @@ class BudgetController extends Controller
             'budgets_total_budget' => $request->budgets_total_budget,
             'budgets_update_by'    => Session::get('users_uuid')
         ]);
+
+        $catName = $budget->category ? $budget->category->categories_name : '-';
+        logActivity('UPDATE_BUDGET', "Mengubah total budget kategori {$catName} tahun {$budget->budgets_period_year} menjadi Rp " . number_format($request->budgets_total_budget, 0, ',', '.'));
 
         return response()->json([
             'status'  => true,

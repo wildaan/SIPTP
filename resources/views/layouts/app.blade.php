@@ -435,8 +435,17 @@
                             @endif
                         @endif
 
+                        {{-- Profile --}}
+                        <li class="sidebar-title">Akun</li>
+                        <li class="sidebar-item">
+                            <a href="#" class='sidebar-link' id="btnOpenProfile">
+                                <i class="bi bi-person-circle"></i>
+                                <span>{{ Session::get('users_user_name')}}</span>
+                            </a>
+                        </li>
+
                         {{-- Logout --}}
-                        <li class="sidebar-item mt-5">
+                        <li class="sidebar-item">
                             <a href="#" class='sidebar-link text-danger' id="btnLogout">
                                 <i class="bi bi-box-arrow-left text-danger"></i>
                                 <span>Logout</span>
@@ -665,6 +674,54 @@
     })();
     </script>
 
+    {{-- Modal Edit Profil --}}
+    <div class="modal fade" id="modalProfile" tabindex="-1" aria-labelledby="modalProfileTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="formProfile">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalProfileTitle">
+                            <i class="bi bi-person-circle me-1"></i> Edit Profil
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="profile_user_name" class="form-label fw-semibold">Username <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="profile_user_name" name="users_user_name"
+                                value="{{ Session::get('users_user_name') }}" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_email" class="form-label fw-semibold">Email <span class="text-danger">*</span></label>
+                            <input type="email" class="form-control" id="profile_email" name="users_email"
+                                value="{{ Session::get('users_email') }}" required>
+                        </div>
+                        <hr>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-info-circle me-1"></i> Kosongkan password jika tidak ingin mengubahnya.
+                        </p>
+                        <div class="mb-3">
+                            <label for="profile_password" class="form-label fw-semibold">Password Baru</label>
+                            <input type="password" class="form-control" id="profile_password" name="password"
+                                placeholder="Minimal 8 karakter" minlength="8">
+                        </div>
+                        <div class="mb-3">
+                            <label for="profile_password_confirmation" class="form-label fw-semibold">Konfirmasi Password</label>
+                            <input type="password" class="form-control" id="profile_password_confirmation" name="password_confirmation"
+                                placeholder="Ulangi password baru">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i> Simpan Perubahan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
     {{-- JS DINAMIS TAMBAHAN (per-halaman: DataTables init, Chart.js, dll) --}}
     @stack('scripts')
 
@@ -693,6 +750,32 @@
 
         $(document).ready(function() {
             initChoices();
+
+            // Profile modal
+            $('#btnOpenProfile').on('click', function(e) {
+                e.preventDefault();
+                $('#profile_password').val('');
+                $('#profile_password_confirmation').val('');
+                new bootstrap.Modal(document.getElementById('modalProfile')).show();
+            });
+
+            // Profile form submit
+            $('#formProfile').on('submit', function(e) {
+                e.preventDefault();
+                const formData = $(this).serialize();
+
+                ajaxRequest({
+                    url: '{{ route("profile.update") }}',
+                    method: 'POST',
+                    data: formData,
+                    confirmTitle: 'Simpan Perubahan Profil?',
+                    confirmMessage: 'Apakah Anda yakin ingin menyimpan perubahan profil?',
+                    successCallback: function(response) {
+                        bootstrap.Modal.getInstance(document.getElementById('modalProfile')).hide();
+                        location.reload();
+                    }
+                });
+            });
 
             $('#btnLogout').on('click', function(e) {
                 e.preventDefault();

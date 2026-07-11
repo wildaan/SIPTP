@@ -19,4 +19,9 @@ class UserActivity extends Model
         'user_activity_ip_address',
         'user_activity_create_date'
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user_activity_user_uuid', 'users_uuid');
+    }
 }
