@@ -68,13 +68,13 @@ SIPTP adalah aplikasi berbasis web yang digunakan untuk mengelola pengajuan tran
 
 Setelah menjalankan seeder, gunakan akun berikut untuk mencoba login sebagai berbagai role:
 
-| Role     | Email             | Password | Keterangan |                                                                            |     |
-| ----------| -------------------| ----------| ------------| ----------------------------------------------------------------------------| -----|
-| Staff    | staff@test.com    | password | -          | Memiliki hak akses budget & kategory dan pengaturan (`users_is_admin = 1`) |     |
-| SPV      | spv@test.com      | password | -          |                                                                            |     |
-| Manager  | manager@test.com  | password | -          |                                                                            |     |
-| Direktur | direktur@test.com | password | -          |                                                                            |     |
-| Finance  | finance@test.com  | password | -          |                                                                            |     |
+| Role     | Email             | Password | Keterangan                                                                     |     |     |
+| ----------| -------------------| ----------| --------------------------------------------------------------------------------| -----| -----|
+| Staff    | staff@test.com    | password | Memiliki hak akses budget & kategory dan pengaturan (`users_is_admin = 1`)   ` |     |     |
+| SPV      | spv@test.com      | password | -                                                                              |     |     |
+| Manager  | manager@test.com  | password | -                                                                              |     |     |
+| Direktur | direktur@test.com | password | -                                                                              |     |     |
+| Finance  | finance@test.com  | password | -                                                                              |     |     |
 
 *(Role "Admin" tidak dibuat sebagai entitas role terpisah di tabel `roles`, melainkan di-handle via flag `users_is_admin = 1` pada tabel `users`, agar tidak bentrok dengan logic threshold-based routing yang berbasis `roles_code`.)*
 
