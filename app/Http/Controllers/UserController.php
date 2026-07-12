@@ -122,7 +122,7 @@ class UserController extends Controller
             'users_email' => $request->users_email,
             'users_user_name' => $request->users_user_name,
             'users_password' => Hash::make($request->password),
-            //'users_status' => $request->status ?? 1,
+            'users_status' =>  1,
             'users_is_admin' => $request->users_is_admin ?? 0,
             'users_create_by' => current_user_uuid(),
             'users_create_date' => now()
@@ -145,7 +145,6 @@ class UserController extends Controller
             'users_user_name' => 'required|string|unique:users,users_user_name,' . $id . ',users_id',
             'users_email' => 'required|email|unique:users,users_email,' . $id . ',users_id',
             'roles_uuid' => 'required|exists:roles,roles_uuid',
-            //'status' => 'required|in:1,2',
             'password' => 'nullable|string|min:8',
             'password_confirmation' => 'nullable|same:password',
         ]);
@@ -162,7 +161,6 @@ class UserController extends Controller
             'users_roles_uuid' => $request->roles_uuid,
             'users_email' => $request->users_email,
             'users_user_name' => $request->users_user_name,
-            //'users_status' => $request->status,
             'users_is_admin' => $request->users_is_admin ?? 0,
             'users_update_by' => current_user_uuid(),
             'users_update_date' => now()
@@ -208,38 +206,6 @@ class UserController extends Controller
         return response()->json([
             'status' => true,
             'message' => "User berhasil {$statusText}",
-            'data' => []
-        ]);
-    }
-
-    public function resetPassword(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
-
-        $validator = Validator::make($request->all(), [
-            'password' => 'required|string|min:8',
-            'password_confirmation' => 'required|same:password',
-        ]);
-
-        if ($validator->fails()) {
-            return response()->json([
-                'status' => false,
-                'message' => 'Validasi gagal',
-                'errors' => $validator->errors()
-            ], 422);
-        }
-
-        $user->update([
-            'users_password' => Hash::make($request->password),
-            'users_update_by' => current_user_uuid(),
-            'users_update_date' => now()
-        ]);
-
-        logActivity('RESET_PASSWORD_USER', "Password user {$user->users_user_name} telah direset");
-
-        return response()->json([
-            'status' => true,
-            'message' => 'Password berhasil direset',
             'data' => []
         ]);
     }

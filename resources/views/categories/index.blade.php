@@ -44,7 +44,7 @@
                                 @if($cat->categories_status == 1)
                                     <span class="badge bg-success">Aktif</span>
                                 @else
-                                    <span class="badge bg-secondary">Nonaktif</span>
+                                    <span class="badge bg-danger">Nonaktif</span>
                                 @endif
                             </td>
                             <td>
@@ -83,13 +83,13 @@
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Kode Kategori</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="edit_code" required>
+                        <input type="text" class="form-control bg-white" id="edit_code" required>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Nama Kategori</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="edit_name" required>
+                        <input type="text" class="form-control bg-white" id="edit_name" required>
                     </div>
                 </div>
             </div>
@@ -113,14 +113,14 @@
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Kode Kategori</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="create_code" placeholder="Masukan Kode Kategori" required>
+                        <input type="text" class="form-control bg-white" id="create_code" placeholder="Masukan Kode Kategori" required>
                         <div class="form-text">Kode harus unik.</div>
                     </div>
                 </div>
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Nama Kategori</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="create_name" placeholder="Masukan Nama Kategori" required>
+                        <input type="text" class="form-control bg-white" id="create_name" placeholder="Masukan Nama Kategori" required>
                     </div>
                 </div>
             </div>
@@ -142,7 +142,7 @@ $(document).ready(function () {
     $('#categoriesTable').DataTable({
         responsive: true,
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+            url: "{{ asset('vendor/datatables/id.json') }}",
             searchPlaceholder: "Cari kategori..."
         }
     });

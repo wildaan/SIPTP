@@ -80,7 +80,7 @@ $(document).ready(function () {
         responsive: true,
         order: [[1, 'desc']], // Sort by date descending
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+            url: "{{ asset('vendor/datatables/id.json') }}",
             searchPlaceholder: "Cari riwayat..."
         }
     });

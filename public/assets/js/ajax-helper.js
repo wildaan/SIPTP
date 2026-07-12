@@ -69,8 +69,8 @@ function ajaxRequest(options) {
 
     if (showConfirm) {
         Swal.fire({
-            title: options.confirmTitle || 'Apakah Anda Yakin?',
-            text: options.confirmMessage || 'Tindakan ini tidak dapat dibatalkan!',
+            title: options.confirmTitle || 'Konfirmasi !',
+            text: options.confirmMessage || 'Apakah anda yakin akan menyimpan data ini ?',
             icon: 'question',
             showCancelButton: true,
             confirmButtonColor: '#435ebe',

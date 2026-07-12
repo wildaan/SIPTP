@@ -89,12 +89,11 @@
                 <input type="hidden" id="edit_uuid">
                 <div class="alert alert-warning small">
                     <strong>Budget terpakai saat ini:</strong> <span id="edit_used_label">Rp 0</span><br>
-                    Total budget baru tidak boleh lebih kecil dari angka terpakai di atas.
                 </div>
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Total Budget Baru (Rp)</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="edit_total" placeholder="Masukan Total Budget Baru (Rp)" required>
+                        <input type="text" class="form-control bg-white" id="edit_total" placeholder="Masukan Total Budget Baru (Rp)" required>
                     </div>
                 </div>
             </div>
@@ -139,7 +138,7 @@
                 <div class="row mb-3">
                     <label class="col-sm-4 col-form-label fw-semibold">Total Budget (Rp)</label>
                     <div class="col-sm-8">
-                        <input type="text" class="form-control" id="create_total" placeholder="Masukan Total Budget (Rp)" required>
+                        <input type="text" class="form-control bg-white" id="create_total" placeholder="Masukan Total Budget (Rp)" required>
                     </div>
                 </div>
             </div>
@@ -161,7 +160,7 @@ $(document).ready(function () {
     $('#budgetsTable').DataTable({
         responsive: true,
         language: {
-            url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+            url: "{{ asset('vendor/datatables/id.json') }}",
             searchPlaceholder: "Cari budget..."
         }
     });
@@ -203,7 +202,6 @@ $(document).ready(function () {
 
         $('#edit_uuid').val(uuid);
         $('#edit_total').val(formatRupiah(String(total))).data('min-val', used);
-        $('#editModalTitle').text('Ubah Total Budget — ' + category);
         $('#edit_used_label').text('Rp ' + new Intl.NumberFormat('id-ID').format(used));
 
         new bootstrap.Modal(document.getElementById('editModal')).show();

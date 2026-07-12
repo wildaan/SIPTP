@@ -14,7 +14,25 @@ class BudgetSeeder extends Seeder
 
         $atk         = DB::table('categories')->where('categories_code', 'ATK')->first();
         $operasional = DB::table('categories')->where('categories_code', 'OP')->first();
+        $PO = DB::table('categories')->where('categories_code', 'PO')->first();
+        $PO_ASET = DB::table('categories')->where('categories_code', 'PO-ASET')->first();
         $budgets = [
+            [
+                'budgets_uuid'             => (string) Str::uuid(),
+                'budgets_categories_uuid'  => $PO->categories_uuid,
+                'budgets_period_year'      => $year,
+                'budgets_total_budget'     => 8000000.00,
+                'budgets_used_budget'      => 0.00,
+                'budgets_status'           => 1,
+            ],
+            [
+                'budgets_uuid'             => (string) Str::uuid(),
+                'budgets_categories_uuid'  => $PO_ASET->categories_uuid,
+                'budgets_period_year'      => $year,
+                'budgets_total_budget'     => 9000000.00,
+                'budgets_used_budget'      => 0.00,
+                'budgets_status'           => 1,
+            ],
             [
                 'budgets_uuid'             => (string) Str::uuid(),
                 'budgets_categories_uuid'  => $atk->categories_uuid,

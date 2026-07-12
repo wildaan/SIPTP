@@ -151,7 +151,7 @@
                             <div class="row mb-3">
                                 <label for="approval_notes" class="col-sm-3 col-form-label fw-semibold">Catatan (Opsional)</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" id="approval_notes" rows="3" placeholder="Masukan Catatan"></textarea>
+                                    <textarea class="form-control bg-white" id="approval_notes" rows="3" placeholder="Masukan Catatan"></textarea>
                                 </div>
                             </div>
 
@@ -206,7 +206,7 @@
                             <div class="row mb-3">
                                 <label for="payment_notes" class="col-sm-3 col-form-label fw-semibold">Catatan (Opsional)</label>
                                 <div class="col-sm-9">
-                                    <textarea class="form-control" id="payment_notes" rows="2" placeholder="Masukan Catatan Pembayaran"></textarea>
+                                    <textarea class="form-control bg-white" id="payment_notes" rows="2" placeholder="Masukan Catatan Pembayaran"></textarea>
                                 </div>
                             </div>
 
@@ -364,7 +364,7 @@ $(document).ready(function () {
                 notes: notes
             },
             confirmTitle: label + ' Pengajuan ?',
-            confirmMessage: 'Apakah anda yakin akan akan menyimpan data pengajuan ini ?',
+            confirmMessage: 'Apakah anda yakin akan akan menyimpan data ini ?',
             successCallback: function (response) {
                 if (response.redirect) {
                     window.location.href = response.redirect;
