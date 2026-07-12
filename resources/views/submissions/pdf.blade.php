@@ -195,7 +195,7 @@
     </table>
 
     <div class="footer">
-        Dokumen ini diterbitkan secara digital oleh sistem SIPTP pada {{ date('d F Y H:i:s') }}.
+         Sistem Informasi Pengajuan Transaksi Pengeluaran (SIPTP) {{ date('d F Y H:i:s') }}.
     </div>
 </body>
 </html>

@@ -35,8 +35,8 @@
                             <label for="categories_uuid" class="col-sm-3 col-form-label fw-semibold">
                                 Tanggal Pengajuan <span class="text-danger">*</span>
                             </label>
-                            <div class="col-sm-9">
-                                <input type="date" class="form-control" name="submissions_date" value="{{ $subNum }}" required >
+                            <div class="col-sm-3">
+                                <input type="date" class="form-control bg-white" name="submissions_date" value="{{ $subNum }}" required >
                             </div>
                         </div>
 
@@ -53,7 +53,7 @@
                             <label for="categories_uuid" class="col-sm-3 col-form-label fw-semibold">
                                 Kategori <span class="text-danger">*</span>
                             </label>
-                            <div class="col-sm-9">
+                            <div class="col-sm-5">
                                 <select class="form-select" id="categories_uuid" name="categories_uuid" required>
                                     <option value="" disabled selected>-- Pilih Kategori --</option>
                                     @foreach($categories as $category)
@@ -69,7 +69,7 @@
                                 Nilai Pengajuan (Rp) <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-9">
-                                <input type="text" id="amount" class="form-control" name="amount"
+                                <input type="text" id="amount" class="form-control bg-white" name="amount"
                                     placeholder="Masukan Nilai Pengajuan" required>
                                 <div class="form-text text-muted" id="workflowHint"></div>
                             </div>
@@ -80,7 +80,7 @@
                                 Deskripsi <span class="text-danger">*</span>
                             </label>
                             <div class="col-sm-9">
-                                <textarea class="form-control" id="description" name="description" rows="4"
+                                <textarea class="form-control bg-white" id="description" name="description" rows="4"
                                     placeholder="Masukan Deskripsi / Keperluan" required></textarea>
                             </div>
                         </div>
@@ -103,18 +103,18 @@
                                         <tbody>
                                             <tr class="upload-row">
                                                 <td>
-                                                    <input type="hidden" name="nama_pengaju[]" class="form-control"
+                                                    <input type="hidden" name="nama_pengaju[]" class="form-control bg-white"
                                                         value="{{ Session::get('users_user_name') }}"
                                                         placeholder="Masukan Nama Pengaju" required>
                                                         {{ Session::get('users_user_name') }}
                                                 </td>
                                                 <td>
-                                                    <input type="hidden" name="upload_time[]" class="form-control upload-time-input"
+                                                    <input type="hidden" name="upload_time[]" class="form-control bg-white upload-time-input"
                                                         value="{{ date('d M Y H:i:s') }}" readonly>
                                                         {{ date('d M Y H:i:s') }}
                                                 </td>
                                                 <td>
-                                                    <input type="file" name="documents[]" class="form-control"
+                                                    <input type="file" name="documents[]" class="form-control bg-white"
                                                         accept=".pdf,.jpg,.jpeg,.png" required>
                                                 </td>
                                                 <td class="text-center">
@@ -161,11 +161,11 @@ $(document).ready(function () {
         const val = parseInt(cleanVal) || 0;
         let hint = '';
         if (val > 10000000) {
-            hint = 'Notes : Untuk nilai lebih dari Rp 10jt Alur Approval : SPV → Manager → Direktur → Finance';
+            hint = 'Notes : Nilai di atas Rp 10jt akan langsung diajukan ke Direktur (SPV & Manager dilewati), lalu Finance.';
         } else if (val > 5000000) {
-            hint = 'Notes : Untuk nilai lebih dari Rp 5jt Alur Approval : SPV → Manager → Finance';
+            hint = 'Notes : Nilai Rp 5jt - Rp 10jt akan langsung diajukan ke Manager (SPV dilewati), lalu Finance.';
         } else if (val > 0) {
-            hint = 'Notes : Untuk nilai kurang dari Rp 5jt Alur Approval : SPV → Finance';
+            hint = 'Notes : Nilai hingga Rp 5jt akan diajukan ke SPV, lalu Finance.';
         }
 
         const selText = $('#categories_uuid option:selected')
@@ -173,7 +173,7 @@ $(document).ready(function () {
             .toLowerCase()
             .replace(/[^a-z0-9]+/g, ' ');
         if(selText.includes('po produk')) {
-            hint = 'Notes : Khusus untuk kategori PO Produk setelah diajukan langsung ke Direktur lalu Finance';
+            hint = 'Notes : Kategori PO Produk akan langsung diajukan ke Direktur (SPV & Manager dilewati), lalu Finance, berapa pun nilainya.';
         }
         $('#workflowHint').text(hint);
     });
@@ -209,17 +209,17 @@ $(document).ready(function () {
         const newRow = `
             <tr class="upload-row">
                 <td>
-                    <input type="hidden" name="nama_pengaju[]" class="form-control"
+                    <input type="hidden" name="nama_pengaju[]" class="form-control bg-white"
                         value="${username}" placeholder="Masukan Nama Pengaju">
                         ${username}
                 </td>
                 <td>
-                    <input type="hidden" name="upload_time[]" class="form-control upload-time-input"
+                    <input type="hidden" name="upload_time[]" class="form-control bg-white upload-time-input"
                         value="${timeStr}">
                         ${timeStr}
                 </td>
                 <td>
-                    <input type="file" name="documents[]" class="form-control"
+                    <input type="file" name="documents[]" class="form-control bg-white"
                         accept=".pdf,.jpg,.jpeg,.png">
                 </td>
                 <td class="text-center">

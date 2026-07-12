@@ -657,8 +657,6 @@ class SubmissionController extends Controller
         $submissions = $query->orderBy('submissions_create_date', 'desc')->get();
 
         $statusMap = [
-            1 => 'Draft',
-            2 => 'Submitted',
             3 => 'Waiting SPV Approval',
             4 => 'Waiting Manager Approval',
             5 => 'Waiting Director Approval',
@@ -667,59 +665,53 @@ class SubmissionController extends Controller
             8 => 'Rejected',
         ];
 
-        $filename = 'transaksi_pengajuan_' . date('Ymd_His') . '.xls';
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $sheet = $spreadsheet->getActiveSheet();
 
-        $headers = [
-            'Content-Type'        => 'application/vnd.ms-excel',
-            'Content-Disposition' => 'attachment; filename="' . $filename . '"',
-            'Cache-Control'       => 'max-age=0',
-        ];
+        $headerRow = ['No', 'No. Pengajuan', 'Tanggal', 'Pengaju', 'Kategori', 'Nilai (Rp)', 'Status'];
+        $sheet->fromArray($headerRow, null, 'A1');
 
-        $callback = function () use ($submissions, $statusMap) {
-            $output = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">';
-            $output .= '<head><meta charset="UTF-8">';
-            $output .= '';
-            $output .= '</head>';
-            $output .= '<body>';
-            $output .= '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">';
-            $output .= '<thead>';
-            $output .= '<tr style="background-color: #435ebe; color: #ffffff; font-weight: bold;">';
-            $output .= '<th style="border: 1px solid #000;">No</th>';
-            $output .= '<th style="border: 1px solid #000;">No. Pengajuan</th>';
-            $output .= '<th style="border: 1px solid #000;">Tanggal</th>';
-            $output .= '<th style="border: 1px solid #000;">Pengaju</th>';
-            $output .= '<th style="border: 1px solid #000;">Kategori</th>';
-            $output .= '<th style="border: 1px solid #000;">Nilai (Rp)</th>';
-            $output .= '<th style="border: 1px solid #000;">Status</th>';
-            $output .= '</tr>';
-            $output .= '</thead>';
-            $output .= '<tbody>';
+        $headerStyle = $sheet->getStyle('A1:G1');
+        $headerStyle->getFont()->setBold(true)->getColor()->setARGB('FFFFFFFF');
+        $headerStyle->getFill()
+            ->setFillType(\PhpOffice\PhpSpreadsheet\Style\Fill::FILL_SOLID)
+            ->getStartColor()->setARGB('FF435EBE');
+        $headerStyle->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
 
-            $no = 1;
-            foreach ($submissions as $sub) {
-                $output .= '<tr>';
-                $output .= '<td style="border: 1px solid #000; text-align: center;">' . $no++ . '</td>';
-                $output .= '<td style="border: 1px solid #000;">' . htmlspecialchars($sub->submissions_submissions_number) . '</td>';
-                $output .= '<td style="border: 1px solid #000;">' . date('d/m/Y', strtotime($sub->submissions_date)) . '</td>';
-                $output .= '<td style="border: 1px solid #000;">' . htmlspecialchars($sub->user->users_user_name ?? '-') . '</td>';
-                $output .= '<td style="border: 1px solid #000;">' . htmlspecialchars($sub->category->categories_name ?? '-') . '</td>';
-                
-                $output .= '<td style="border: 1px solid #000; text-align: right;">' . $sub->submissions_amount . '</td>';
-                
-                $output .= '<td style="border: 1px solid #000;">' . ($statusMap[$sub->submissions_status] ?? 'Unknown') . '</td>';
-                $output .= '</tr>';
-            }
+        $rowNum = 2;
+        $no = 1;
+        foreach ($submissions as $sub) {
+            $sheet->setCellValue('A' . $rowNum, $no++);
+            $sheet->setCellValue('B' . $rowNum, $sub->submissions_submissions_number);
+            $sheet->setCellValue('C' . $rowNum, date('d/m/Y', strtotime($sub->submissions_date)));
+            $sheet->setCellValue('D' . $rowNum, $sub->user->users_user_name ?? '-');
+            $sheet->setCellValue('E' . $rowNum, $sub->category->categories_name ?? '-');
+            $sheet->setCellValue('F' . $rowNum, (float) $sub->submissions_amount);
+            $sheet->setCellValue('G' . $rowNum, $statusMap[$sub->submissions_status] ?? 'Unknown');
 
-            $output .= '</tbody>';
-            $output .= '</table>';
-            $output .= '</body></html>';
+            $sheet->getStyle('A' . $rowNum . ':G' . $rowNum)
+                ->getBorders()->getAllBorders()->setBorderStyle(\PhpOffice\PhpSpreadsheet\Style\Border::BORDER_THIN);
+            $sheet->getStyle('F' . $rowNum)->getNumberFormat()->setFormatCode('#,##0');
 
-            echo $output;
-        };
+            $rowNum++;
+        }
+
+        foreach (range('A', 'G') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
 
         logActivity('EXPORT_EXCEL_SUBMISSIONS', 'Mengekspor daftar pengajuan transaksi ke Excel');
 
-        return response()->stream($callback, 200, $headers);
+        $filename = 'transaksi_pengajuan_' . date('Ymd_His') . '.xlsx';
+
+        $writer = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($spreadsheet);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type'        => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'Cache-Control'       => 'max-age=0',
+        ]);
     }
 
     public function exportPdf($id)
@@ -750,7 +742,7 @@ class SubmissionController extends Controller
 
     private function generateSubmissionNumber()
     {
-        $prefix = 'SUB-' . date('Ymd') . '-';
+        $prefix = 'SIPTP-' . date('Ym') . '-';
         $lastSubmission = Submission::where('submissions_submissions_number', 'like', $prefix . '%')
             ->orderByDesc('submissions_submissions_number')
             ->first();

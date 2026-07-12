@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Dashboard Utama')
+@section('title', 'Dashboard')
 @section('page-title', 'Dashboard')
 @section('page-subtitle', 'Ringkasan data dan pengajuan terbaru.')
 
@@ -144,8 +144,8 @@
                                         <td>
                                             @php
                                                 $statusMap = [
-                                                    3 => ['class' => 'warning',    'text' => 'Waiting SPV Approval'],
-                                                    4 => ['class' => 'warning',    'text' => 'Waiting Manager Approval'],
+                                                    3 => ['class' => 'secondary',    'text' => 'Waiting SPV Approval'],
+                                                    4 => ['class' => 'info',    'text' => 'Waiting Manager Approval'],
                                                     5 => ['class' => 'warning',    'text' => 'Waiting Director Approval'],
                                                     6 => ['class' => 'info',       'text' => 'Waiting Finance'],
                                                     7 => ['class' => 'success',    'text' => 'Paid'],
@@ -228,8 +228,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const statusMap = {
         1: { label: 'Draft', color: '#6c757d' },           // secondary
         2: { label: 'Submitted', color: '#0dcaf0' },       // info
-        3: { label: 'Waiting SPV Approval', color: '#ffc107' },     // warning
-        4: { label: 'Waiting Manager Approval', color: '#ffc107' }, // warning
+        3: { label: 'Waiting SPV Approval', color: '#6c757d' },     // warning
+        4: { label: 'Waiting Manager Approval', color: '#0dcaf0' }, // warning
         5: { label: 'Waiting Director Approval', color: '#ffc107' },// warning
         6: { label: 'Waiting Finance', color: '#0dcaf0' }, // info
         7: { label: 'Paid', color: '#198754' },            // success

@@ -45,11 +45,6 @@
                         <option value="2">Tidak Aktif</option>
                     </select>
                 </div>
-                <div class="col-md-2 mb-2 d-grid">
-                    <button type="button" class="btn btn-secondary" onclick="if(window.dtUsers) window.dtUsers.draw();">
-                        <i class="bi bi-search"></i> Filter
-                    </button>
-                </div>
             </div>
 
             {{-- Tabel Area --}}
@@ -72,7 +67,7 @@
     </div>
 </section>
 
-{{-- Modal Form User (Bisa untuk Create / Edit) --}}
+{{-- Modal Form User (Create / Edit) --}}
 <div class="modal fade" id="modalUserForm" tabindex="-1" aria-labelledby="modalUserFormTitle" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -87,26 +82,37 @@
                     <div class="row mb-3">
                         <label for="users_user_name" class="col-sm-4 col-form-label">Username <span class="text-danger">*</span></label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" id="users_user_name" name="users_user_name" placeholder="Masukan Username" required>
+                            <input type="text" class="form-control bg-white" id="users_user_name" name="users_user_name" placeholder="Masukan Username" required>
                         </div>
                     </div>
                     
                     <div class="row mb-3">
                         <label for="users_email" class="col-sm-4 col-form-label">Email <span class="text-danger">*</span></label>
                         <div class="col-sm-8">
-                            <input type="email" class="form-control" id="users_email" name="users_email" placeholder="Masukan Email" required>
+                            <input type="email" class="form-control bg-white" id="users_email" name="users_email" placeholder="Masukan Email" required>
                         </div>
                     </div>
                     
                     <div class="row mb-3">
-                        <label for="roles_uuid" class="col-sm-4 col-form-label">Role <span class="text-danger">*</span></label>
+                        <label class="col-sm-4 col-form-label">Role <span class="text-danger">*</span></label>
                         <div class="col-sm-8">
-                            <select class="form-select" id="roles_uuid" name="roles_uuid" required>
-                                <option value="">-- Pilih Role --</option>
-                                @foreach($roles as $role)
-                                    <option value="{{ $role->roles_uuid }}">{{ $role->roles_name }}</option>
-                                @endforeach
-                            </select>
+                            <input type="hidden" id="current_role_uuid">
+
+                            <div id="roleDisplayWrapper" style="display:flex; align-items:center; gap:8px;">
+                                <span id="roleDisplayText" class="fw-semibold"></span>
+                                <button type="button" class="btn btn-sm btn-outline-secondary" onclick="enableRoleChange()">
+                                    <i class="bi bi-pencil-square"></i> Ubah Role
+                                </button><br/>
+                            </div>
+
+                            <div id="roleSelectWrapper" style="display:none;">
+                                <select class="form-select bg-white" id="roles_uuid" name="roles_uuid" required>
+                                    <option value="">-- Pilih Role --</option>
+                                    @foreach($roles as $role)
+                                        <option value="{{ $role->roles_uuid }}">{{ $role->roles_name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
 
@@ -127,7 +133,7 @@
                     <div class="row mb-3">
                         <label for="password" class="col-sm-4 col-form-label">Password <span class="text-danger id-pass-req">*</span></label>
                         <div class="col-sm-8">
-                            <input type="password" class="form-control" id="password" name="password" placeholder="Masukan Password">
+                            <input type="password" class="form-control bg-white" id="password" name="password" placeholder="Masukan Password">
                             <div class="form-text id-pass-help" style="display:none;">Kosongkan jika tidak ingin mengubah password.</div>
                         </div>
                     </div>
@@ -135,7 +141,7 @@
                     <div class="row mb-3">
                         <label for="password_confirmation" class="col-sm-4 col-form-label">Konfirmasi Password <span class="text-danger id-pass-req">*</span></label>
                         <div class="col-sm-8">
-                            <input type="password" class="form-control" id="password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password">
+                            <input type="password" class="form-control bg-white" id="password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password">
                         </div>
                     </div>
 
@@ -153,37 +159,7 @@
     </div>
 </div>
 
-{{-- Modal Reset Password --}}
-<div class="modal fade" id="modalResetPassword" tabindex="-1" aria-labelledby="modalResetPasswordTitle" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered modal-sm">
-        <div class="modal-content">
-            <form id="formResetPassword" onsubmit="submitResetPassword(event)">
-                <div class="modal-header bg-warning">
-                    <h5 class="modal-title text-white" id="modalResetPasswordTitle">Reset Password</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <input type="hidden" id="reset_user_id" name="reset_user_id">
-                    <p class="text-muted text-sm" id="reset_user_name_display"></p>
-                    
-                    <div class="mb-3">
-                        <label for="reset_password" class="form-label">Password Baru <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="reset_password" name="password" placeholder="Masukan Password Baru" required>
-                    </div>
-                    
-                    <div class="mb-3">
-                        <label for="reset_password_confirmation" class="form-label">Konfirmasi Password <span class="text-danger">*</span></label>
-                        <input type="password" class="form-control" id="reset_password_confirmation" name="password_confirmation" placeholder="Masukan Konfirmasi Password" required>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-light-secondary" data-bs-dismiss="modal">Batal</button>
-                    <button type="submit" class="btn btn-warning ml-1">Reset</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
+
 @endsection
 
 @push('scripts')
@@ -197,8 +173,6 @@
     $(document).ready(function() {
         // Initialize Modals
         userModal = new bootstrap.Modal(document.getElementById('modalUserForm'));
-        resetModal = new bootstrap.Modal(document.getElementById('modalResetPassword'));
-
         // Initialize DataTable
         window.dtUsers = $('#usersTable').DataTable({
             processing: true,
@@ -221,7 +195,7 @@
                 { data: 'action', name: 'action', orderable: false, searchable: false, className: 'text-center' }
             ],
             language: {
-                url: '//cdn.datatables.net/plug-ins/1.13.7/i18n/id.json',
+                url: "{{ asset('vendor/datatables/id.json') }}",
                 search: "",
                 searchPlaceholder: "Cari data..."
             },
@@ -241,19 +215,26 @@
         });
     });
 
+    function enableRoleChange() {
+        $('#roleDisplayWrapper').hide();
+        $('#roleSelectWrapper').show();
+    }
     // OPEN CREATE MODAL
     function openCreateModal() {
         $('#formUser')[0].reset();
         $('#user_id').val('');
+        $('#current_role_uuid').val('');
         $('#modalUserFormTitle').text('Tambah User Baru');
         
-        // Atur password wajib
         $('#password, #password_confirmation').prop('required', true);
         $('.id-pass-req').show();
         $('.id-pass-help').hide();
 
-        // Reset admin checkbox
         $('#users_is_admin').prop('checked', false);
+
+        $('#roleDisplayWrapper').hide();
+        $('#roleSelectWrapper').show();
+        try { if (typeof choicesRole !== 'undefined' && choicesRole) choicesRole.setChoiceByValue(''); } catch(e) {}
         
         userModal.show();
     }
@@ -266,17 +247,25 @@
         
         $('#users_user_name').val(username);
         $('#users_email').val(email);
-        $('#roles_uuid').val(roleUuid);
-        $('#status').val(status);
+        
+        let cleanRoleUuid = $.trim(roleUuid);
+        $('#current_role_uuid').val(cleanRoleUuid);
 
-        // Set admin checkbox
+        let roleName = $('#roles_uuid option[value="' + cleanRoleUuid + '"]').text() || '-';
+        $('#roleDisplayText').text(roleName);
+
+        $('#roleDisplayWrapper').show();
+        $('#roleSelectWrapper').hide();
+        try { if (typeof choicesRole !== 'undefined' && choicesRole) choicesRole.setChoiceByValue(''); } catch(e) {}
+
+        $('#status').val(status).trigger('change'); 
+
         $('#users_is_admin').prop('checked', isAdmin == 1);
         
-        // Atur password tidak wajib
         $('#password, #password_confirmation').prop('required', false);
         $('.id-pass-req').hide();
         $('.id-pass-help').show();
-        
+
         userModal.show();
     }
 
@@ -286,11 +275,14 @@
         
         let id = $('#user_id').val();
         let url = id ? '{{ url("/users") }}/' + id : '{{ url("/users") }}';
+
+        let selectedRole  = $('#roles_uuid').val();
+        let finalRoleUuid = ($('#roleSelectWrapper').is(':visible') && selectedRole) ? selectedRole : $('#current_role_uuid').val();
         
         let data = {
             users_user_name: $('#users_user_name').val(),
             users_email: $('#users_email').val(),
-            roles_uuid: $('#roles_uuid').val(),
+            roles_uuid: finalRoleUuid,
             status: $('#status').val(),
             users_is_admin: $('#users_is_admin').is(':checked') ? 1 : 0,
             password: $('#password').val(),
@@ -326,34 +318,6 @@
                         window.dtUsers.ajax.reload(null, false);
                     }
                 });
-            }
-        });
-    }
-
-    // OPEN RESET PASSWORD MODAL
-    function openResetPasswordModal(id, username) {
-        $('#formResetPassword')[0].reset();
-        $('#reset_user_id').val(id);
-        $('#reset_user_name_display').text('Mereset password untuk user: ' + username);
-        resetModal.show();
-    }
-
-    // SUBMIT RESET PASSWORD
-    function submitResetPassword(e) {
-        e.preventDefault();
-        let id = $('#reset_user_id').val();
-        let formData = {
-            password: $('#reset_password').val(),
-            password_confirmation: $('#reset_password_confirmation').val()
-        };
-
-        ajaxRequest({
-            url: '{{ url("/users") }}/' + id + '/reset-password',
-            method: 'POST',
-            data: formData,
-            successCallback: function(res) {
-                resetModal.hide();
-                window.dtUsers.ajax.reload(null, false);
             }
         });
     }
