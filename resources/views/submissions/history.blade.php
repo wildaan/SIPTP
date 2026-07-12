@@ -78,7 +78,7 @@ $(document).ready(function () {
     // Initialize DataTable
     $('#historyTable').DataTable({
         responsive: true,
-        order: [[1, 'desc']], // Sort by date descending
+        order: [[0, 'desc']], // Sort by date descending
         language: {
             url: "{{ asset('vendor/datatables/id.json') }}",
             searchPlaceholder: "Cari riwayat..."
