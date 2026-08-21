@@ -21,12 +21,12 @@ SIPTP adalah aplikasi berbasis web yang digunakan untuk mengelola pengajuan tran
    ```
 
 3. **Setup Database**
-   Buat database kosong di MySQL (misal bernama `lavanaya`), lalu sesuaikan konfigurasi di file `.env`:
+   Buat database kosong di MySQL (misal bernama `siptp`), lalu sesuaikan konfigurasi di file `.env`:
    ```env
    DB_CONNECTION=mysql
    DB_HOST=127.0.0.1
    DB_PORT=3306
-   DB_DATABASE=lavanaya
+   DB_DATABASE=siptp
    DB_USERNAME=root
    DB_PASSWORD=
    ```
@@ -92,9 +92,9 @@ Dokumentasi API tersedia dalam bentuk **Postman Collection** di dalam folder `do
 
 ---
 
-## Fitur Tambahan (Nilai Plus)
+## Fitur Unggulan
 
-Berikut fitur tambahan di luar requirement minimum yang sudah diimplementasikan:
+Fitur pendukung yang melengkapi sistem inti:
 
 - [x] **Email Notification** — notifikasi otomatis di setiap perubahan status pengajuan (submit, approve/reject per tier approval, masuk ke Finance, hingga status akhir Paid/Rejected)
 - [x] **API Endpoint** — dokumentasi lengkap tersedia dalam bentuk Postman Collection (lihat bagian "Dokumentasi API" di atas)
